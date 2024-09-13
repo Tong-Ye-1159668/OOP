@@ -17,11 +17,13 @@ def getCustomerList():
 def getProductList():
     '''Read the product.txt file and return a list of Product objects.'''
     pList = []
+    i = 0
     with open("product.txt", "r") as productFile:
         for line in productFile:
             data = line.strip().split(", ")
             pName = data[0]
             pPrice = float(data[1])
-            product = Product(pName, pPrice)
+            product = Product(i, pName, pPrice)
             pList.append(product)
+            i = i + 1
     return pList

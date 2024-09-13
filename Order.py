@@ -24,11 +24,11 @@ class Order:
 
   # Getter and setter for orderID
   @property
-  def orderID(self):
+  def id(self):
     return self.__orderID
   
-  @orderID.setter
-  def orderID(self, value):
+  @id.setter
+  def id(self, value):
     self.__orderID = value
 
   # Getter and setter for date
@@ -42,19 +42,20 @@ class Order:
 
   # Getter for orderItems
   @property
-  def orderItems(self):
+  def items(self):
     return self.__orderItems
   
   #Add an order item to the order.
-  def addOrderItem(self, orderItem):
+  def add(self, orderItem):
     '''Add an order item to the order.'''
-    self.orderItems.append(orderItem)
+    self.__orderItems.append(orderItem)
   
   #Calculate the total price of the order.
-  def calcTotal(self):
+  @property
+  def total(self):
         total = 0
-        for item in self.orderItems:
-            total += item.calcPrice()
+        for item in self.__orderItems:
+            total += item.price
         return total
   
   #Display the order ID, Customer, date, and order items.
@@ -62,10 +63,10 @@ class Order:
     '''Display the order ID, date, and order items.'''
     formattedDate = self.date.strftime("%d-%m-%Y %H:%M:%S")
     items = ''
-    for item in self.orderItems:
+    for item in self.__orderItems:
         items += f'{item}\n'
-    return (f'Order ID: {self.orderID}\n'
-            f'Customer: {self.customer.customerName}\n'
+    return (f'Order ID: {self.id}\n'
+            f'Customer: {self.customer.name}\n'
             f'Date: {formattedDate}\n'
             f'Order Items:\n{items}\n'
-            f'Total Price: ${self.calcTotal()}')
+            f'Total Price: ${self.total}')

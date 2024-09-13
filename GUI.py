@@ -19,14 +19,14 @@ class LOSApp:
         self.root.maxsize(1920, 1080)
 
         # Load the images
-        self.logo = tk.PhotoImage(file='images\\LOS_logo.png')
-        self.icon = tk.PhotoImage(file='images\\LOS_icon.png')
-        self.add_order_icon = tk.PhotoImage(file='images\\add_order.png')
-        self.orders_icon = tk.PhotoImage(file='images\\customer_orders.png')
-        self.payments_icon = tk.PhotoImage(file='images\\customer_payments.png')
-        self.customers_icon = tk.PhotoImage(file='images\\all_customers.png')
-        self.all_orders_icon = tk.PhotoImage(file='images\\all_orders.png')
-        self.all_payments_icon = tk.PhotoImage(file='images\\all_payments.png')
+        self.logo = tk.PhotoImage(file='images/LOS_logo.png')
+        self.icon = tk.PhotoImage(file='images/LOS_icon.png')
+        self.add_order_icon = tk.PhotoImage(file='images/add_order.png')
+        self.orders_icon = tk.PhotoImage(file='images/customer_orders.png')
+        self.payments_icon = tk.PhotoImage(file='images/customer_payments.png')
+        self.customers_icon = tk.PhotoImage(file='images/all_customers.png')
+        self.all_orders_icon = tk.PhotoImage(file='images/all_orders.png')
+        self.all_payments_icon = tk.PhotoImage(file='images/all_payments.png')
         self.root.iconphoto(True, self.icon)
 
         # Sidebar
@@ -124,7 +124,7 @@ class LOSApp:
         customer_label = tk.Label(customer_info_frame, text="Select Customer:", bg=background_colour)
         customer_label.grid(row=0, column=0, sticky="w")
 
-        self.customer_combobox = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
+        self.customer_combobox = ttk.Combobox(customer_info_frame, values=[customer.name for customer in self.Controller.customers])
         self.customer_combobox.grid(row=0, column=1, padx=10)
 
         self.customer_info_text = tk.Text(customer_info_frame, height=5, width=40, bg="#e0ffff")
@@ -141,7 +141,7 @@ class LOSApp:
         product_label = tk.Label(process_order_frame, text="Select Product:", bg=background_colour)
         product_label.grid(row=0, column=0, sticky="w")
 
-        self.product_combobox = ttk.Combobox(process_order_frame, values=[product.productName for product in self.Controller.products])
+        self.product_combobox = ttk.Combobox(process_order_frame, values=[product.name for product in self.Controller.products])
         self.product_combobox.grid(row=0, column=1, padx=10)
 
         quantity_label = tk.Label(process_order_frame, text="Quantity:", bg=background_colour)
@@ -184,7 +184,7 @@ class LOSApp:
         customer_label = tk.Label(customer_info_frame, text="Select Customer:", bg=background_colour)
         customer_label.grid(row=0, column=0, sticky="w")
 
-        self.customer_combobox2 = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
+        self.customer_combobox2 = ttk.Combobox(customer_info_frame, values=[customer.name for customer in self.Controller.customers])
         self.customer_combobox2.grid(row=0, column=1, padx=10)
 
         display_orders_button = tk.Button(customer_info_frame, text="Display Orders", command=self.display_customer_orders)
@@ -195,8 +195,10 @@ class LOSApp:
 
     # Method to display orders for a selected customer
     def display_customer_orders(self):
-        customer_name = self.customer_combobox2.get()
-        customer = self.Controller.find_customer_by_name(customer_name)
+        #customer_name = self.customer_combobox2.get()
+        index = self.customer_combobox2.current()
+        customer = self.Controller.customers[index]
+        # customer = self.Controller.find_customer_by_name(customer_name)
         if customer:
             self.customer_orders_text.delete(1.0, tk.END)
             orders = self.Controller.display_customer_orders(customer.id)
@@ -216,7 +218,7 @@ class LOSApp:
         customer_label = tk.Label(customer_info_frame, text="Select Customer:", bg=background_colour)
         customer_label.grid(row=0, column=0, sticky="w")
 
-        self.customer_combobox3 = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
+        self.customer_combobox3 = ttk.Combobox(customer_info_frame, values=[customer.name for customer in self.Controller.customers])
         self.customer_combobox3.grid(row=0, column=1, padx=10)
 
         display_payments_button = tk.Button(customer_info_frame, text="Display Payments", command=self.display_customer_payments)
@@ -255,7 +257,7 @@ class LOSApp:
         self.all_customers_text.delete(1.0, tk.END)
         customers = self.Controller.customers
         for customer in customers:
-            self.all_customers_text.insert(tk.END, f"Customer ID: {customer.id}, Name: {customer.customerName}, Balance: ${customer.balance:.2f}\n")
+            self.all_customers_text.insert(tk.END, f"Customer ID: {customer.id}, Name: {customer.name}, Balance: ${customer.balance:.2f}\n")
 
     # Frame 5: Display the list of all orders for the company
     def setup_frame5(self):
@@ -272,7 +274,7 @@ class LOSApp:
         self.all_orders_text.delete(1.0, tk.END)
         orders = self.Controller.orders
         for order in orders:
-            self.all_orders_text.insert(tk.END, f"Order ID: {order.id}, Customer: {order.customer.customerName}, Total: ${order.total:.2f}\n")
+            self.all_orders_text.insert(tk.END, f"Order ID: {order.id}, Customer: {order.customer.name}, Total: ${order.total:.2f}\n")
 
     # Frame 6: Display the list of all payments for the company
     def setup_frame6(self):
@@ -289,7 +291,7 @@ class LOSApp:
         self.all_payments_text.delete(1.0, tk.END)
         payments = self.Controller.payments
         for payment in payments:
-            self.all_payments_text.insert(tk.END, f"Payment ID: {payment.id}, Customer: {payment.customer.customerName}, Amount: ${payment.amount:.2f}\n")
+            self.all_payments_text.insert(tk.END, f"Payment ID: {payment.id}, Customer: {payment.customer.name}, Amount: ${payment.amount:.2f}\n")
 
 
     def show_frame(self, frame):
@@ -315,17 +317,22 @@ class LOSApp:
         self.quantity_entry.delete(0, tk.END)
         self.order_details_text.delete(1.0, tk.END)
         self.payment_entry.delete(0, tk.END)
+    
+    def update_customer_info(self, customer):
+        self.customer_info_text.delete(1.0, tk.END)
+        self.customer_info_text.insert(tk.END, f"Customer ID: {customer.id}\n")
+        self.customer_info_text.insert(tk.END, f"Name: {customer.name}\n")
+        self.customer_info_text.insert(tk.END, f"Balance: {customer.balance:.2f}\n")
+        ##self.order_info.delete(1.0, tk.END)  # Clear previous order info
 
     def create_new_order(self):
-        customer_name = self.customer_combobox.get()
-        customer = self.Controller.find_customer_by_name(customer_name)
+        # customer_name = self.customer_combobox.get()
+        # customer = self.Controller.find_customer_by_name(customer_name)
+        index = self.customer_combobox.current()
+        customer = self.Controller.customers[index]
         if customer:
-            self.current_order = self.Controller.create_order(customer_name)
-            self.customer_info_text.delete(1.0, tk.END)
-            self.customer_info_text.insert(tk.END, f"Customer ID: {customer.customerID}\n")
-            self.customer_info_text.insert(tk.END, f"Name: {customer.customerName}\n")
-            self.customer_info_text.insert(tk.END, f"Balance: {customer.customerBalance:.2f}\n")
-            ##self.order_info.delete(1.0, tk.END)  # Clear previous order info
+            self.current_order = self.Controller.create_order(customer.id)
+            self.update_customer_info(customer)
         else:
             messagebox.showerror("Error", "Customer not found.")
 
@@ -333,7 +340,6 @@ class LOSApp:
         if not hasattr(self, 'current_order') or self.current_order is None:
             messagebox.showerror("Error", "Please create an order first")
             return
-        product_name = self.product_combobox.get()
         try:
             quantity = int(self.quantity_entry.get())
             if quantity < 1:
@@ -344,32 +350,38 @@ class LOSApp:
             return
 
      
-        product = self.Controller.find_product_by_name(product_name)
+        product_index = self.product_combobox.current()
+        # product = self.Controller.find_product_by_id(product_name)
+        product = self.Controller.products[product_index]
         if product:
-            self.Controller.add_order_item(self.current_order, product, quantity)
-            self.order_details_text.insert(tk.END, f"{product_name} - {quantity} units added to order.\n")
+            self.Controller.add_order_item(self.current_order, product.id, quantity)
+            self.order_details_text.insert(tk.END, f"{product.name} - {quantity} units added to order.\n")
         else:
             messagebox.showerror("Error", "Product not found.")
 
     def submit_order(self):
         if self.current_order:
             self.Controller.submit_order(self.current_order)
+            self.update_customer_info(self.current_order.customer)
             messagebox.showinfo("Order Submitted", "Your order has been submitted successfully.")
             self.order_details_text.delete(1.0, tk.END)
         else:
             messagebox.showerror("Error", "No active order to submit.")
 
     def process_payment(self):
-        customer_name = self.customer_combobox.get()
         try:
             amount = float(self.payment_entry.get())
         except ValueError:
             messagebox.showerror("Invalid Input", "Payment amount must be a number.")
             return
 
-        customer = self.Controller.find_customer_by_name(customer_name)
+        # customer_name = self.customer_combobox.get()
+        index = self.customer_combobox.current()
+        customer = self.Controller.customers[index]
+        # customer = self.Controller.find_customer_by_name(customer_name)
         if customer:
-            self.Controller.make_payment(customer_name, amount)
+            self.Controller.make_payment(customer.id, amount)
+            self.update_customer_info(customer)
             messagebox.showinfo("Payment Processed", f"Payment of ${amount:.2f} processed successfully.")
         else:
             messagebox.showerror("Error", "Customer not found.")

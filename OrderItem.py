@@ -29,9 +29,10 @@ class OrderItem:
         self.__quantity = value
 
     # Calculate the gross price, GST, and net price of the order item.
-    def calcPrice(self):
+    @property
+    def price(self):
         '''Calculate the gross price, GST, and net price of the order item.'''
-        grossPrice = self.product.productPrice * self.quantity
+        grossPrice = self.product.price * self.quantity
         gst = grossPrice * 0.15
         netPrice = grossPrice + gst
         return netPrice
@@ -39,4 +40,4 @@ class OrderItem:
     # Display the product name and cost per item.
     def __str__(self):
         '''Display the product name and cost per item.'''
-        return f'You have ordered {self.quantity} of {self.product.productName}, which totals ${self.calcPrice()}.'
+        return f'You have ordered {self.quantity} of {self.product.name}, which totals ${self.price}.'

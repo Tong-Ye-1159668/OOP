@@ -1,9 +1,9 @@
 from datetime import datetime
 
 class Payment:
-  def __init__(self, customer, pAmount):
+  def __init__(self, customer, amount):
     self.__customer = customer
-    self.__paymentAmount = pAmount
+    self.__paymentAmount = amount
     self.__paymentDate = datetime.now()
 
   # Getter and setter for customer
@@ -40,6 +40,6 @@ class Payment:
     '''Display the payment date, amount, and customer name.'''
     formattedDate = self.paymentDate.strftime("%d-%m-%Y %H:%M:%S")
     return (f'Payment: \n'
-            f'Customer: {self.customer.customerName}\n'
+            f'Customer: {self.customer.name}\n'
             f'Amount: ${self.paymentAmount}\n'
             f'Date: {formattedDate}')

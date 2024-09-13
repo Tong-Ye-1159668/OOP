@@ -16,29 +16,29 @@ class Customer:
 
   # Getter and setter for customerName
   @property
-  def customerName(self):
+  def name(self):
     return self.__customerName
   
-  @customerName.setter
-  def customerName(self, value):
+  @name.setter
+  def name(self, value):
     self.__customerName = value
 
   # Getter and setter for customerID
   @property
-  def customerID(self):
+  def id(self):
     return self.__customerID
   
-  @customerID.setter
-  def customerID(self, value):
+  @id.setter
+  def id(self, value):
     self.__customerID = value
 
   # Getter and setter for balance
   @property
-  def customerBalance(self):
+  def balance(self):
     return self.__customerBalance
   
-  @customerBalance.setter
-  def customerBalance(self, value):
+  @balance.setter
+  def balance(self, value):
     if value < 0:
       raise ValueError("Balance cannot be negative")
     self.__customerBalance = value
@@ -55,13 +55,13 @@ class Customer:
   def addOrder(self, order):
     '''Adds a new order.'''
     self.__orders.append(order)
-    self.customerBalance += order.calcTotal()
+    # self.customerBalance += order.calcTotal()
 
   # Add payment and update balance
   def addPayment(self, payment):
     '''Adds a new payment.'''
     self.__payments.append(payment)
-    self.customerBalance -= payment.paymentAmount
+    # self.customerBalance -= payment.paymentAmount
 
   # Display the customer ID, name, and balance.
   def __str__(self):
