@@ -112,6 +112,10 @@ class LOSApp:
         # Show the first frame by default
         self.show_frame(self.frame1)
 
+        # Initialize order and customer variables
+        self.current_order = None
+        self.current_customer = None
+
     def setup_frame1(self):
         # Setup the layout for the "Add New Order" page
         customer_info_frame = tk.LabelFrame(self.frame1, text="Customer Information", bg=background_colour, padx=10, pady=10)
@@ -123,7 +127,7 @@ class LOSApp:
         self.customer_combobox = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
         self.customer_combobox.grid(row=0, column=1, padx=10)
 
-        self.customer_info_text = tk.Text(customer_info_frame, height=2, width=40, bg="#e0ffff")
+        self.customer_info_text = tk.Text(customer_info_frame, height=5, width=40, bg="#e0ffff")
         self.customer_info_text.insert(tk.END, "Customer information will be displayed here.")
         self.customer_info_text.grid(row=0, column=2, padx=10)
 
@@ -172,10 +176,136 @@ class LOSApp:
         pay_button = tk.Button(process_payment_frame, text="Pay", command=self.process_payment)
         pay_button.grid(row=0, column=2, padx=10)
 
-    
+    # Frame 2: Display the list of orders for a selected customer
+    def setup_frame2(self):
+        customer_info_frame = tk.LabelFrame(self.frame2, text="Customer Orders", bg=background_colour, padx=10, pady=10)
+        customer_info_frame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.2)
+
+        customer_label = tk.Label(customer_info_frame, text="Select Customer:", bg=background_colour)
+        customer_label.grid(row=0, column=0, sticky="w")
+
+        self.customer_combobox2 = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
+        self.customer_combobox2.grid(row=0, column=1, padx=10)
+
+        display_orders_button = tk.Button(customer_info_frame, text="Display Orders", command=self.display_customer_orders)
+        display_orders_button.grid(row=0, column=2, padx=10)
+
+        self.customer_orders_text = tk.Text(self.frame2, height=20, width=80, bg="#e0ffff")
+        self.customer_orders_text.place(relx=0.05, rely=0.3, relwidth=0.9, relheight=0.6)
+
+    # Method to display orders for a selected customer
+    def display_customer_orders(self):
+        customer_name = self.customer_combobox2.get()
+        customer = self.Controller.find_customer_by_name(customer_name)
+        if customer:
+            self.customer_orders_text.delete(1.0, tk.END)
+            orders = self.Controller.display_customer_orders(customer.id)
+            if orders:
+                for order in orders:
+                    self.customer_orders_text.insert(tk.END, f"Order ID: {order.id}, Total: ${order.total:.2f}\n")
+            else:
+                self.customer_orders_text.insert(tk.END, "No orders found for this customer.")
+        else:
+            messagebox.showerror("Error", "Customer not found.")
+
+    # Frame 3: Display the list of payments for a selected customer
+    def setup_frame3(self):
+        customer_info_frame = tk.LabelFrame(self.frame3, text="Customer Payments", bg=background_colour, padx=10, pady=10)
+        customer_info_frame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.2)
+
+        customer_label = tk.Label(customer_info_frame, text="Select Customer:", bg=background_colour)
+        customer_label.grid(row=0, column=0, sticky="w")
+
+        self.customer_combobox3 = ttk.Combobox(customer_info_frame, values=[customer.customerName for customer in self.Controller.customers])
+        self.customer_combobox3.grid(row=0, column=1, padx=10)
+
+        display_payments_button = tk.Button(customer_info_frame, text="Display Payments", command=self.display_customer_payments)
+        display_payments_button.grid(row=0, column=2, padx=10)
+
+        self.customer_payments_text = tk.Text(self.frame3, height=20, width=80, bg="#e0ffff")
+        self.customer_payments_text.place(relx=0.05, rely=0.3, relwidth=0.9, relheight=0.6)
+
+    # Method to display payments for a selected customer
+    def display_customer_payments(self):
+        customer_name = self.customer_combobox3.get()
+        customer = self.Controller.find_customer_by_name(customer_name)
+        if customer:
+            self.customer_payments_text.delete(1.0, tk.END)
+            payments = self.Controller.display_customer_payments(customer.id)
+            if payments:
+                for payment in payments:
+                    self.customer_payments_text.insert(tk.END, f"Payment ID: {payment.id}, Amount: ${payment.amount:.2f}\n")
+            else:
+                self.customer_payments_text.insert(tk.END, "No payments found for this customer.")
+        else:
+            messagebox.showerror("Error", "Customer not found.")
+
+    # Frame 4: Display the list of all customers for the company
+    def setup_frame4(self):
+        customer_info_frame = tk.LabelFrame(self.frame4, text="All Customers", bg=background_colour, padx=10, pady=10)
+        customer_info_frame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+
+        self.all_customers_text = tk.Text(customer_info_frame, height=30, width=80, bg="#e0ffff")
+        self.all_customers_text.pack()
+
+        self.display_all_customers()
+
+    # Method to display all customers
+    def display_all_customers(self):
+        self.all_customers_text.delete(1.0, tk.END)
+        customers = self.Controller.customers
+        for customer in customers:
+            self.all_customers_text.insert(tk.END, f"Customer ID: {customer.id}, Name: {customer.customerName}, Balance: ${customer.balance:.2f}\n")
+
+    # Frame 5: Display the list of all orders for the company
+    def setup_frame5(self):
+        orders_info_frame = tk.LabelFrame(self.frame5, text="All Orders", bg=background_colour, padx=10, pady=10)
+        orders_info_frame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+
+        self.all_orders_text = tk.Text(orders_info_frame, height=30, width=80, bg="#e0ffff")
+        self.all_orders_text.pack()
+
+        self.display_all_orders()
+
+    # Method to display all orders
+    def display_all_orders(self):
+        self.all_orders_text.delete(1.0, tk.END)
+        orders = self.Controller.orders
+        for order in orders:
+            self.all_orders_text.insert(tk.END, f"Order ID: {order.id}, Customer: {order.customer.customerName}, Total: ${order.total:.2f}\n")
+
+    # Frame 6: Display the list of all payments for the company
+    def setup_frame6(self):
+        payments_info_frame = tk.LabelFrame(self.frame6, text="All Payments", bg=background_colour, padx=10, pady=10)
+        payments_info_frame.place(relx=0.05, rely=0.05, relwidth=0.9, relheight=0.9)
+
+        self.all_payments_text = tk.Text(payments_info_frame, height=30, width=80, bg="#e0ffff")
+        self.all_payments_text.pack()
+
+        self.display_all_payments()
+
+    # Method to display all payments
+    def display_all_payments(self):
+        self.all_payments_text.delete(1.0, tk.END)
+        payments = self.Controller.payments
+        for payment in payments:
+            self.all_payments_text.insert(tk.END, f"Payment ID: {payment.id}, Customer: {payment.customer.customerName}, Amount: ${payment.amount:.2f}\n")
+
 
     def show_frame(self, frame):
+        if frame == self.frame2:
+            self.setup_frame2()
+        elif frame == self.frame3:
+            self.setup_frame3()
+        elif frame == self.frame4:
+            self.setup_frame4()
+        elif frame == self.frame5:
+            self.setup_frame5()
+        elif frame == self.frame6:
+            self.setup_frame6()
+
         frame.tkraise()
+
 
     def reset_frame1(self):
         self.show_frame(self.frame1)
@@ -190,32 +320,40 @@ class LOSApp:
         customer_name = self.customer_combobox.get()
         customer = self.Controller.find_customer_by_name(customer_name)
         if customer:
-            self.order = self.Controller.create_order(customer.id)
-            messagebox.showinfo("Order Created", f"New order created for {customer_name}.")
+            self.current_order = self.Controller.create_order(customer_name)
+            self.customer_info_text.delete(1.0, tk.END)
+            self.customer_info_text.insert(tk.END, f"Customer ID: {customer.customerID}\n")
+            self.customer_info_text.insert(tk.END, f"Name: {customer.customerName}\n")
+            self.customer_info_text.insert(tk.END, f"Balance: {customer.customerBalance:.2f}\n")
+            ##self.order_info.delete(1.0, tk.END)  # Clear previous order info
         else:
             messagebox.showerror("Error", "Customer not found.")
 
     def add_product(self):
+        if not hasattr(self, 'current_order') or self.current_order is None:
+            messagebox.showerror("Error", "Please create an order first")
+            return
         product_name = self.product_combobox.get()
         try:
             quantity = int(self.quantity_entry.get())
+            if quantity < 1:
+                 messagebox.showerror("Quantity Error", "Quantity must be greater than 0.")
+                 return
         except ValueError:
             messagebox.showerror("Invalid Input", "Quantity must be an integer.")
             return
 
-        if self.order:
-            product = self.Controller.find_product_by_name(product_name)
-            if product:
-                self.Controller.add_order_item(self.order, product.id, quantity)
-                self.order_details_text.insert(tk.END, f"{product_name} - {quantity} units added to order.\n")
-            else:
-                messagebox.showerror("Error", "Product not found.")
+     
+        product = self.Controller.find_product_by_name(product_name)
+        if product:
+            self.Controller.add_order_item(self.current_order, product, quantity)
+            self.order_details_text.insert(tk.END, f"{product_name} - {quantity} units added to order.\n")
         else:
-            messagebox.showerror("Error", "Please create an order first.")
+            messagebox.showerror("Error", "Product not found.")
 
     def submit_order(self):
-        if self.order:
-            self.Controller.submit_order(self.order)
+        if self.current_order:
+            self.Controller.submit_order(self.current_order)
             messagebox.showinfo("Order Submitted", "Your order has been submitted successfully.")
             self.order_details_text.delete(1.0, tk.END)
         else:
@@ -231,7 +369,7 @@ class LOSApp:
 
         customer = self.Controller.find_customer_by_name(customer_name)
         if customer:
-            self.Controller.make_payment(customer.id, amount)
+            self.Controller.make_payment(customer_name, amount)
             messagebox.showinfo("Payment Processed", f"Payment of ${amount:.2f} processed successfully.")
         else:
             messagebox.showerror("Error", "Customer not found.")
